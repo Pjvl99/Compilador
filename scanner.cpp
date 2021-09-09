@@ -85,6 +85,7 @@ while(strcmp(token, "END") != 0){
   texto >> token;
   texto >> regex;
 }
+myfile << "END";
 myfile.close();
 texto.close();
 }
@@ -97,7 +98,7 @@ int recorrer = 0;
 struct node* temp = dfa->adjLists[0];
 bool guardar = true;
 myfile << token;
-myfile << "--";
+myfile << endl;
 while(guardar){
 while(temp){
         myfile << std::to_string(recorrer);
@@ -109,7 +110,6 @@ recorrer += 1;
 if(recorrer == 10){break;}
 temp = dfa->adjLists[recorrer];
 }
-myfile << "--";
 myfile << endl;
 }
 void casos(struct Graph* graph , char regex[100], struct Graph* nfa){
