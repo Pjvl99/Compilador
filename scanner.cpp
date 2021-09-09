@@ -4,6 +4,7 @@
 #include <string.h>
 #include <conio.h>
 #include <fstream>
+using namespace std;
 struct node {
   int vertex;
   char weight[100];
@@ -39,11 +40,15 @@ void parentesis(int *ini, int *dest, struct Graph* nfa, char test[100], int rec,
 void asterisco(int **ini, int **dest, struct Graph* nfa, int n, bool retornar);
 void asterisco(int **ini, int **dest, struct Graph* nfa, int n, bool retornar);
 void transform(struct Graph* nfa, struct Graph* dfa);
+void transicion(char token[100], char regex[100]);
 bool ramificar = false;
 bool doble = false;
 struct Graph* graph = createAGraph(8);
+ofstream myfile ("grafos.txt");
 int main(){
-char regex[100] = "(-|ε)·([0-9])+·(.·([0-9])*)?";
+char regex[100];
+char token[100];
+ifstream texto ("regex.txt");
 addEdge(graph, 0, 1, "1");
 addEdge(graph, 0, 1, "[");
 addEdge(graph, 0, 1, "("); 
@@ -73,28 +78,39 @@ addEdge(graph, 6, 5, "|");
 addEdge(graph, 7, 1, "|");
 addEdge(graph, 7, 0, "·");
 addEdge(graph, 7, 6, ")");
+texto >> token;
+texto >> regex;
+while(strcmp(token, "END") != 0){
+  transicion(token, regex);
+  texto >> token;
+  texto >> regex;
+}
+myfile.close();
+texto.close();
+}
+void transicion(char token[100], char regex[100]){
 struct Graph* dfa = createAGraph(10);
 struct Graph* nfa = createAGraph(10);
 casos(graph, regex, nfa);
 transform(nfa, dfa);
-FILE *arch;
-arch=fopen("grafos.dat", "wb");
-if(arch==NULL){exit(1);}
 int recorrer = 0;
 struct node* temp = dfa->adjLists[0];
 bool guardar = true;
+myfile << token;
+myfile << "--";
 while(guardar){
 while(temp){
-fwrite(&temp->weight, sizeof(char[100]), 1, arch);
-fwrite(&temp->vertex, sizeof(int), 1, arch);
-fwrite(&recorrer, sizeof(int), 1, arch);
-temp = temp->next;
+        myfile << std::to_string(recorrer);
+        myfile << std::to_string(temp->vertex);
+        myfile << temp->weight;
+        temp = temp->next;
 }
 recorrer += 1;
 if(recorrer == 10){break;}
 temp = dfa->adjLists[recorrer];
 }
-fclose(arch);
+myfile << "--";
+myfile << endl;
 }
 void casos(struct Graph* graph , char regex[100], struct Graph* nfa){
 int rec = 0;
