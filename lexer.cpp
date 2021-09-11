@@ -176,5 +176,5 @@ bool punteros(struct Graph* supergrafo, char code[100], int rec, int continuar, 
           return fin;}}}
 if(cambiar){actual=pointer->vertex;pointer = supergrafo->adjLists[pointer->vertex];cambiar=false;}
 else{pointer = pointer->next;}}
-fin = true;
+if(actual == 0){fin = true;}
 return fin;}
