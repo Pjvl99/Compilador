@@ -57,6 +57,7 @@ addEdge(graph, 0, 1, "(");
 addEdge(graph, 1, 2, "1");
 addEdge(graph, 1, 2, "[");
 addEdge(graph, 1, 4, "·");
+addEdge(graph, 1, 3, "|");
 addEdge(graph, 2, 2, "1");
 addEdge(graph, 2, 6, ")");
 addEdge(graph, 2, 2, "[");
@@ -64,6 +65,7 @@ addEdge(graph, 2, 3, "|");
 addEdge(graph, 3, 2, "1");
 addEdge(graph, 3, 2, ")");
 addEdge(graph, 3, 2, "[");
+addEdge(graph, 3, 4, "·");
 addEdge(graph, 3, 2, "(");
 addEdge(graph, 2, 4, "·");
 addEdge(graph, 4, 2, "1");
@@ -88,7 +90,7 @@ while(strcmp(token, "END") != 0){
   texto >> regex;}
 myfile << "END";
 myfile.close();
-texto.close();}
+texto.close(); printf("\nGrafos generados correctamente");}
 void transicion(char token[100], char regex[100], struct Graph* mega){
 struct Graph* dfa = createAGraph(10);
 struct Graph* nfa = createAGraph(10);
@@ -128,12 +130,12 @@ parentesis(&ini, &dest, nfa, regex, rec, &save);}
 else if(regex[rec] == '|'){
 str = "";
 rec += 1;
-if(regex[rec] == '(' && regex[rec+2] != ')'){
+if((regex[rec] == '(' && regex[rec+2] != ')')){
 rec += 1;
-ini += 1;
-dest += 1;
 if(regex[rec] != -50){str += regex[rec];
-rec = dividir(rec, ini, dest, save, str, nfa, regex);}else{rec -= 1;}}
+dest += 1;
+ini = dest-1;
+addEdge(nfa, save, dest, str.c_str());}else{rec -= 1;}}
 else{rec -= 1;}}
 temp = graph->adjLists[temp->vertex];
 nonext = true;}
@@ -142,6 +144,7 @@ if(regex[rec+2] != '('){ini += 1;dest += 1;rec += 1;}else{rec += 1;}
 temp = graph->adjLists[temp->vertex];
 nonext = true;}
 else if(strcmp(temp->weight, "1") == 0){
+if(ini == -1){ini += 1; dest += 1;}
 if(regex[rec] == -50){
     addEdge(nfa, ini, dest, "#");
     rec += 1;}
@@ -228,7 +231,7 @@ if(temp->vertex == actual-1){retorno = true;}} //El primer caso es si epsilon ap
 // apunten al mismo nodo -> 2->1 hay epsilon, esto significa que los caracteres que esten en el 1->2 apunten a su mismo nodo
 else{
   caracteres += 1;
-  addEdge(dfa, ini, temp->vertex-dest, temp->weight);
+  addEdge(dfa, actual-dest, temp->vertex-dest, temp->weight);
   if(caracteres > 0 && epsilon > 0){bifurcar = true;}} // Si puedo pasar via epsilon y a su vez hay un caracter apuntando al mismo nodo
   // Entonces puedo pasar via ese caracter o simplemente lo puedo ignorar y aun asi pasar
 temp = temp->next;}
@@ -236,12 +239,12 @@ if(retorno || bifurcar){ // De ahi si viene epsilon y no cumple con ninguno de e
   if(retorno){
     temp = nfa->adjLists[actual-1];
     while(temp){
-      if(strcmp(temp->weight, "#") != 0){addEdge(dfa, ini, ini, temp->weight);}
+      if(strcmp(temp->weight, "#") != 0){addEdge(dfa, actual-dest, actual-dest, temp->weight);}
       temp = temp->next;}retorno = false;}
   if(bifurcar){
     temp = nfa->adjLists[actual+1];
     while(temp){
-    if(strcmp(temp->weight, "#") != 0){addEdge(dfa, ini, temp->vertex-dest, temp->weight);}
+    if(strcmp(temp->weight, "#") != 0){addEdge(dfa, actual-dest, temp->vertex-dest, temp->weight);}
     temp = temp->next;}bifurcar = false;}}
 actual += 1;
 if(caracteres > 0){ini += 1;}else{if(epsilon > 0){dest += 1;}}
