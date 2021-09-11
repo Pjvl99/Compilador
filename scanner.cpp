@@ -39,8 +39,9 @@ int corchete(char regex[100], int rec, struct Graph* nfa, int ini, int dest);
 void parentesis(int *ini, int *dest, struct Graph* nfa, char test[100], int rec, int *save);
 void asterisco(int **ini, int **dest, struct Graph* nfa, int n, bool retornar);
 void asterisco(int **ini, int **dest, struct Graph* nfa, int n, bool retornar);
-void transform(struct Graph* nfa, struct Graph* dfa);
-void transicion(char token[100], char regex[100]);
+void transform(struct Graph* nfa, struct Graph* dfa, struct Graph* mega);
+void transicion(char token[100], char regex[100], struct Graph* mega);
+int dividir(int rec, int ini, int dest, int save, string str, struct Graph* nfa, char regex[100]);
 bool ramificar = false;
 bool doble = false;
 struct Graph* graph = createAGraph(8);
@@ -48,6 +49,7 @@ ofstream myfile ("grafos.txt");
 int main(){
 char regex[100];
 char token[100];
+struct Graph* mega = createAGraph(15);
 ifstream texto ("regex.txt");
 addEdge(graph, 0, 1, "1");
 addEdge(graph, 0, 1, "[");
@@ -81,37 +83,32 @@ addEdge(graph, 7, 6, ")");
 texto >> token;
 texto >> regex;
 while(strcmp(token, "END") != 0){
-  transicion(token, regex);
+  transicion(token, regex, mega);
   texto >> token;
-  texto >> regex;
-}
+  texto >> regex;}
 myfile << "END";
 myfile.close();
-texto.close();
-}
-void transicion(char token[100], char regex[100]){
+texto.close();}
+void transicion(char token[100], char regex[100], struct Graph* mega){
 struct Graph* dfa = createAGraph(10);
 struct Graph* nfa = createAGraph(10);
 casos(graph, regex, nfa);
-transform(nfa, dfa);
+transform(nfa, dfa, mega);
 int recorrer = 0;
-struct node* temp = dfa->adjLists[0];
-bool guardar = true;
 myfile << token;
 myfile << endl;
-while(guardar){
+struct node* temp;
+temp = dfa->adjLists[0];
+while(true){
 while(temp){
         myfile << std::to_string(recorrer);
         myfile << std::to_string(temp->vertex);
         myfile << temp->weight;
-        temp = temp->next;
-}
+        temp = temp->next;}
 recorrer += 1;
 if(recorrer == 10){break;}
-temp = dfa->adjLists[recorrer];
-}
-myfile << endl;
-}
+temp = dfa->adjLists[recorrer];}
+myfile << endl;}
 void casos(struct Graph* graph , char regex[100], struct Graph* nfa){
 int rec = 0;
 std::string str("");
@@ -125,7 +122,6 @@ str = "";
 str = regex[rec];
 if(strcmp(temp->weight, str.c_str()) == 0){
 if(regex[rec] == '['){
-if(doble){corchete(regex, rec, nfa, save+1, dest);doble=false;}
 rec = corchete(regex, rec, nfa, ini, dest);}
 else if(regex[rec] == '('){
 parentesis(&ini, &dest, nfa, regex, rec, &save);}
@@ -136,8 +132,8 @@ if(regex[rec] == '(' && regex[rec+2] != ')'){
 rec += 1;
 ini += 1;
 dest += 1;
-if(regex[rec] == -50){str += "#";rec += 1;}else{str += regex[rec];}
-addEdge(nfa, save, dest, str.c_str());doble=true;}
+if(regex[rec] != -50){str += regex[rec];
+rec = dividir(rec, ini, dest, save, str, nfa, regex);}else{rec -= 1;}}
 else{rec -= 1;}}
 temp = graph->adjLists[temp->vertex];
 nonext = true;}
@@ -148,9 +144,8 @@ nonext = true;}
 else if(strcmp(temp->weight, "1") == 0){
 if(regex[rec] == -50){
     addEdge(nfa, ini, dest, "#");
-    if(doble){addEdge(nfa, save+1, dest, "#");doble=false;}
     rec += 1;}
-else{if(doble){addEdge(nfa, save+1, dest, str.c_str());doble=false;}addEdge(nfa, ini, dest, str.c_str());}
+else{addEdge(nfa, ini, dest, str.c_str());}
 temp = graph->adjLists[temp->vertex];
 nonext = true;}
 if(!nonext){temp = temp->next;}
@@ -201,27 +196,43 @@ addEdge(nfa, **ini, **dest, "#");
 **dest += 1;
 addEdge(nfa, **ini, **dest+1+n, "#");
 if(retornar){addEdge(nfa, **dest, **ini, "#");}}
-void transform(struct Graph* nfa, struct Graph* dfa){
+int dividir(int rec, int ini, int dest, int save, string str, struct Graph* nfa, char regex[100]){
+struct node* temp = nfa->adjLists[save];
+bool asignar = true;
+while(temp){
+  if(strcmp(temp->weight, str.c_str()) == 0){
+    rec += 3;
+    str = regex[rec];
+    addEdge(nfa, temp->vertex, dest, str.c_str());
+    asignar = false;
+    break;}
+  temp = temp->next;}
+if(asignar){addEdge(nfa, save, dest, str.c_str());}
+return rec;}
+void transform(struct Graph* nfa, struct Graph* dfa, struct Graph* mega){
 struct node* temp = nfa->adjLists[0];
+struct node* temp2;
 int actual = 0;
 int ini = 0;
-int dest = 1;
+int dest = 0;
 int caracteres = 0;
 int epsilon = 0;
-bool iterar = true;
 bool retorno = false;
 bool bifurcar = false;
-while(iterar){
+while(true){
 while(temp){
 if(strcmp(temp->weight, "#") == 0){
-epsilon += 1;
-if(temp->vertex == actual-1){retorno = true;}}
+epsilon += 1; 
+if(temp->vertex == actual-1){retorno = true;}} //El primer caso es si epsilon apunta a un nodo anterior <- * o + 
+// Ya no incluyo epsilon sino que lo que hago ahora es que cuando llegue a retorno va a hacer que los caracteres del siguiente nodo
+// apunten al mismo nodo -> 2->1 hay epsilon, esto significa que los caracteres que esten en el 1->2 apunten a su mismo nodo
 else{
   caracteres += 1;
-  addEdge(dfa, ini, dest, temp->weight);
-  if(caracteres > 0 && epsilon > 0){bifurcar = true;}}
+  addEdge(dfa, ini, temp->vertex-dest, temp->weight);
+  if(caracteres > 0 && epsilon > 0){bifurcar = true;}} // Si puedo pasar via epsilon y a su vez hay un caracter apuntando al mismo nodo
+  // Entonces puedo pasar via ese caracter o simplemente lo puedo ignorar y aun asi pasar
 temp = temp->next;}
-if(retorno || bifurcar){
+if(retorno || bifurcar){ // De ahi si viene epsilon y no cumple con ninguno de estos 2 casos, la ignoro y simplemete no la agrego
   if(retorno){
     temp = nfa->adjLists[actual-1];
     while(temp){
@@ -230,10 +241,10 @@ if(retorno || bifurcar){
   if(bifurcar){
     temp = nfa->adjLists[actual+1];
     while(temp){
-    if(strcmp(temp->weight, "#") != 0){addEdge(dfa, ini, dest+1, temp->weight);}
+    if(strcmp(temp->weight, "#") != 0){addEdge(dfa, ini, temp->vertex-dest, temp->weight);}
     temp = temp->next;}bifurcar = false;}}
 actual += 1;
-if(caracteres > 0){ini += 1; dest += 1;}
+if(caracteres > 0){ini += 1;}else{if(epsilon > 0){dest += 1;}}
 caracteres = 0;
 epsilon = 0;
 if(actual == 10){break;}
