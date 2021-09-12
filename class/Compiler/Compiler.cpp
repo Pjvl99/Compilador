@@ -2,6 +2,7 @@
 #include <string.h>
 #include "scanner/Scanner.hpp"
 #include "scanner/Lexer.hpp"
+bool debuguear = false;
 int main( int argc, char *argv[] ){
     std::string str("");
     bool jump = false;
@@ -28,7 +29,7 @@ int main( int argc, char *argv[] ){
        return 0;
     } 
     else if(strcmp(argv[1], "-target") == 0){if(argc == 2){todo = true;}}
-    else if(strcmp(argv[1], "-debug") == 0 && argc == 2){msj=true;todo = true;}
+    else if(strcmp(argv[1], "-debug") == 0 && argc == 2){msj=true;todo = true;debuguear=true;}
     else{
         while(argv[2][rec] != '\0'){
             str += argv[2][rec];
@@ -38,12 +39,12 @@ int main( int argc, char *argv[] ){
                 str = "";
                 if(argv[2][rec+1] != '\0'){rec += 1;}}
             rec  += 1;}
-        cantidad = true;}
+        cantidad = true;debuguear=true;}
     if(todo){
         if(msj){printf("\n\nDebugging: Scanner\n");}else{printf("\n\nStage: Scanning\n");}
         scanner();
         if(msj){printf("\n\nDebugging: Lexer\n");}else{printf("\n\nStage: Lexer\n");}
-        lexer();}
+        lexer(debuguear);}
     else if(cantidad){
         while(x != comp){
             if(strcmp(words[comp], "Scanner") == 0){
@@ -53,7 +54,7 @@ int main( int argc, char *argv[] ){
                 quitar = false;}
             else if(strcmp(words[comp], "Lexer") == 0){
                 printf("\nDebugging: Lexer\n");
-                lexer();
+                lexer(debuguear);
                 comp += 1;
                 quitar = false;}
             if(!quitar){quitar=true;}else{comp += 1;}}}
@@ -63,4 +64,4 @@ int main( int argc, char *argv[] ){
         scanner();}
     if(strcmp(argv[2], "Lexer") == 0){
         if(msj){printf("\nDebugging: Lexer\n");}else{printf("\nStage: Lexer\n");}
-        lexer();}}}
+        lexer(debuguear);}}}
