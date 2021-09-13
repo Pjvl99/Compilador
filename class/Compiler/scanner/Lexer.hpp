@@ -143,10 +143,16 @@ while(mostrar != NULL){
   printf("%s->", mostrar->t);
   mostrar = mostrar->next;}}
 void crear(struct Graph2* grafo, char token[20], char dfa[1000]){
+bool doble = false;
+bool primera = true;
 int rec = 0;
+int n = 0;
+int e = 0;
 string a(""); string b(""); string c(""); string d("");
 while(dfa[rec] != '\0'){
-a = dfa[rec]; b = dfa[rec+1]; c = dfa[rec+2]; d = token;
+a = dfa[rec]; b = dfa[rec+1+n]; c = dfa[rec+2+e]; d = token;
+if(stoi(a) == 9){doble = true;}
+if(doble){if(!primera){a += dfa[rec+1];}b += dfa[rec+2+n]; c = dfa[rec+3+n];if(primera){rec += 1;}else{rec += 2;}primera=false;n=1;e=2;}
 addEdge(grafo, stoi(a), stoi(b), c.c_str(), d.c_str());
 rec += 3;}}
 bool punteros(struct Graph2* supergrafo, char code[100], int rec, int continuar, bool *tomar, int *bueno, bool fin, char tokens[6][20]){

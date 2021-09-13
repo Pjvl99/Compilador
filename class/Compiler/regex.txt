@@ -38,12 +38,8 @@ continue
 c·o·n·t·i·n·u·e
 class
 c·l·a·s·s
-type_int
-i·n·t
-type_bool
-b·o·o·l·e·a·n
-type_float
-f·l·o·a·t
+type
+(b·o·o·l)|(i·n·t)|(f·l·o·a·t)
 IF
 i·f
 return

@@ -38,12 +38,8 @@ continue
 01c12o23n34t45i56n67u78e
 class
 01c12l23a34s45s
-type_int
-01i12n23t
-type_bool
-01b12o23o34l45e56a67n
-type_float
-01f12l23o34a45t
+type
+01b05i08f12o23o34l56n67t89l910o1011a1112t
 IF
 01i12f
 return
@@ -68,4 +64,6 @@ squareb_left
 01[
 squareb_right
 01]
+comma
+01,
 END

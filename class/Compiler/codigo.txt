@@ -1,4 +1,4 @@
-int x > 4 false
+int x > 4 false float
 // 0spspsps
 // 0xmcld 0xkdq
 int hola
