@@ -67,12 +67,17 @@ struct Graph2* supergrafo = createAGraphs(25);
 char token[20];
 int rec = 0;
 char dfa[1000];
-grafos >> token;
-grafos >> dfa;
+string pas;
+getline(grafos, pas);
+strcpy(token, pas.c_str());
+getline(grafos, pas);
+strcpy(dfa, pas.c_str());
 while(strcmp(token, "END") != 0){
 crear(supergrafo, token, dfa);
-grafos >> token;
-grafos >> dfa;}
+getline(grafos, pas);
+strcpy(token, pas.c_str());
+getline(grafos, pas);
+strcpy(dfa, pas.c_str());}
 grafos.close();
 ifstream codigo("codigo.txt");
 bool tomar = false;
@@ -83,21 +88,26 @@ bool saltar = false;
 bool fin = false;
 string agregar("");
 string copiar;
+string revisar;
 string agregart("");
 int palabra = 0;
 int linea = 1;
+bool jump = false;
 char tokens[3][20] = {0};
 while(!codigo.eof()){
   getline(codigo, copiar);
   strcpy(code, copiar.c_str());
   while(code[rec] != '\0'){
     continuar += 1;
+    jump = false;
     fin = punteros(supergrafo, code, rec, continuar, &tomar, &bueno, fin, tokens);
     if(tomar){
       continuar = 0;
       tomar = false;
-       while(code[rec] != '\0' && code[rec] != ' '){
+       while(code[rec] != '\0' && (code[rec] != ' ' || jump)){
            agregar += code[rec];
+           revisar = code[rec];
+           if(strcmp(revisar.c_str(), "'")==0){jump = !jump;}
            rec += 1;}
            agregart = tokens[bueno-1];
            if(debuguear){cout << "Analizando palabra: " << agregar << endl;}
@@ -110,7 +120,9 @@ while(!codigo.eof()){
       continuar = 0;
       fin = false;
       if(bueno > 0){
-         while(code[rec] != '\0' && code[rec] != ' '){
+         while(code[rec] != '\0' && (code[rec] != ' ' || jump)){
+           revisar = code[rec];
+           if(strcmp(revisar.c_str(), "'")==0){jump = !jump;}
            agregar += code[rec];
            rec += 1;}
            agregart = tokens[bueno-1];
@@ -123,7 +135,9 @@ while(!codigo.eof()){
           if(code[rec] != '\0'){rec += 1;}palabra += 1;}
           else{
             printf("\n");
-            while(code[rec] != '\0' && code[rec] != ' '){agregar += code[rec];rec += 1;} bueno = 0; if(code[rec] != '\0'){rec += 1;}
+            while(code[rec] != '\0' && (code[rec] != ' ' || jump)){
+              revisar = code[rec]; if(strcmp(revisar.c_str(), "'")==0){jump = !jump;}
+              agregar += code[rec];rec += 1;} bueno = 0; if(code[rec] != '\0'){rec += 1;}
             palabra += 1; if(debuguear){cout << "Analizando palabra: " << agregar << endl;}
             cout << "Error en palabra: " << agregar << " -> Linea " << linea << " Palabra #: " << palabra << endl;agregar = "";}}}
 palabra = 0;
@@ -171,7 +185,6 @@ bool punteros(struct Graph2* supergrafo, char code[100], int rec, int continuar,
   while(pointer){
     if((strcmp(pointer->weight, s.c_str()) == 0) && (token || strcmp(peso.c_str(), pointer->name) == 0)){
       avanzar += 1;
-      if(code[rec] == 34){jump = !jump;}
       if(token && avanzar == continuar){
         peso = pointer->name;
         token = false;}
@@ -179,8 +192,9 @@ bool punteros(struct Graph2* supergrafo, char code[100], int rec, int continuar,
         revisar = true;
         cambiar = true;
         rec += 1;
+        if(strcmp(s.c_str(), "'")==0){jump = !jump;}
         s = code[rec];
-        if(strcmp(s.c_str(), "") == 0 || (strcmp(s.c_str(), " ")) == 0){
+        if((strcmp(s.c_str(), "") == 0 || strcmp(s.c_str(), " ") == 0) && !jump){
           if(actual == pointer->vertex){
             strcpy(tokens[*bueno], peso.c_str());
             *bueno += 1;

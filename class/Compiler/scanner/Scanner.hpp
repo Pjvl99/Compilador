@@ -81,8 +81,11 @@ addEdge(graph, 7, 1, "|");
 addEdge(graph, 7, 0, "·");
 addEdge(graph, 7, 6, ")");
 ofstream myfile ("grafos.txt");
-texto >> token;
-texto >> regex;
+string pasar;
+getline(texto, pasar);
+strcpy(token, pasar.c_str());
+getline(texto, pasar);
+strcpy(regex, pasar.c_str());
 struct node* temp;
 int recorrer = 0;
 while(strcmp(token, "END") != 0){
@@ -104,8 +107,10 @@ recorrer += 1;
 if(recorrer == 24){break;}
 temp = dfa->adjLists[recorrer];}
 myfile << endl;
-  texto >> token;
-  texto >> regex;}
+getline(texto, pasar);
+strcpy(token, pasar.c_str());
+getline(texto, pasar);
+strcpy(regex, pasar.c_str());}
 myfile << "END";
 myfile.close();
 texto.close(); printf("\nGrafos generados correctamente");}

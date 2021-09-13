@@ -13,7 +13,7 @@ FOR
 Comment
 (/·/)
 char_Literal
-'·([A-Za-z0-9])·'
+'·( [A-Za-z0-9] )·'
 arit_op
 +|-|*|/|%
 left_paren_op
