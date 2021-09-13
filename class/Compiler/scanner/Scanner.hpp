@@ -133,6 +133,7 @@ rec += 1;
 if(regex[rec] != -50){str += regex[rec];
 dest += 1;
 ini = dest-1;
+if(regex[rec] == 32){str = "|";}
 addEdge(nfa, save, dest, str.c_str());}else{rec -= 1;}}
 else{rec -= 1;}}
 temp = graph->adjLists[temp->vertex];
@@ -146,7 +147,11 @@ if(ini == -1){ini += 1; dest += 1;}
 if(regex[rec] == -50){
     addEdge(nfa, ini, dest, "#");
     rec += 1;}
-else{addEdge(nfa, ini, dest, str.c_str());}
+else{if(regex[rec] == 36){str = "(";}
+    if(regex[rec] == 35){str = ")";}
+    if(regex[rec] == 38){str = "[";}
+    if(regex[rec] == 94){str = "]";}
+  addEdge(nfa, ini, dest, str.c_str());}
 temp = graph->adjLists[temp->vertex];
 nonext = true;}
 if(!nonext){temp = temp->next;}
