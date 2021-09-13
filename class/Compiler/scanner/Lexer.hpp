@@ -63,7 +63,7 @@ struct nodelink *tok = NULL;
 void lexer(bool debuguear){
 char code[100];
 ifstream grafos("grafos.txt");
-struct Graph2* supergrafo = createAGraphs(15);
+struct Graph2* supergrafo = createAGraphs(25);
 char token[20];
 int rec = 0;
 char dfa[1000];
@@ -146,14 +146,14 @@ void crear(struct Graph2* grafo, char token[20], char dfa[1000]){
 bool doble = false;
 bool primera = true;
 int rec = 0;
-int n = 0;
-int e = 0;
 string a(""); string b(""); string c(""); string d("");
 while(dfa[rec] != '\0'){
-a = dfa[rec]; b = dfa[rec+1+n]; c = dfa[rec+2+e]; d = token;
-if(stoi(a) == 9){doble = true;}
-if(doble){if(!primera){a += dfa[rec+1];}b += dfa[rec+2+n]; c = dfa[rec+3+n];if(primera){rec += 1;}else{rec += 2;}primera=false;n=1;e=2;}
+a = dfa[rec]; b = dfa[rec+1]; c = dfa[rec+2]; d = token;
+if(dfa[rec+3] > 96 && dfa[rec+3] < 123){a = dfa[rec];b=dfa[rec+1];b+=dfa[rec+2];c=dfa[rec+3];rec += 1;}
+else if(dfa[rec+4] > 96 && dfa[rec+4] < 123){a = dfa[rec];a+=dfa[rec+1];b=dfa[rec+2];b+=dfa[rec+3];c=dfa[rec+4];rec += 2;}
 addEdge(grafo, stoi(a), stoi(b), c.c_str(), d.c_str());
+c = dfa[rec+3];
+if(strcmp(c.c_str(), "") == 0){break;}
 rec += 3;}}
 bool punteros(struct Graph2* supergrafo, char code[100], int rec, int continuar, bool *tomar, int *bueno, bool fin, char tokens[6][20]){
   struct node2* pointer = supergrafo->adjLists[0];

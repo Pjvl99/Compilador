@@ -38,8 +38,6 @@ continue
 c·o·n·t·i·n·u·e
 class
 c·l·a·s·s
-type
-(b·o·o·l)|(i·n·t)|(f·l·o·a·t)
 IF
 i·f
 return
@@ -66,6 +64,8 @@ squareb_right
 ^
 comma
 ,
+type
+(b·o·o·l)|(i·n·t)|(f·l·o·a·t)|(c·h·a·r)|(d·o·u·b·l·e)
 END
 
 Num

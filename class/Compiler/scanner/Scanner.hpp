@@ -43,11 +43,11 @@ void transform(struct Graph* nfa, struct Graph* dfa, struct Graph* mega);
 int dividir(int rec, int ini, int dest, int save, string str, struct Graph* nfa, char regex[100]);
 bool ramificar = false;
 bool doble = false;
-struct Graph* graph = createAGraph(14);
+struct Graph* graph = createAGraph(24);
 void scanner(){
 char regex[100];
 char token[100];
-struct Graph* mega = createAGraph(15);
+struct Graph* mega = createAGraph(25);
 ifstream texto ("regex.txt");
 addEdge(graph, 0, 1, "1");
 addEdge(graph, 0, 1, "[");
@@ -86,8 +86,8 @@ texto >> regex;
 struct node* temp;
 int recorrer = 0;
 while(strcmp(token, "END") != 0){
-  struct Graph* dfa = createAGraph(14);
-struct Graph* nfa = createAGraph(14);
+  struct Graph* dfa = createAGraph(24);
+struct Graph* nfa = createAGraph(24);
 casos(graph, regex, nfa);
 transform(nfa, dfa, mega);
 myfile << token;
@@ -101,7 +101,7 @@ while(temp){
         myfile << temp->weight;
         temp = temp->next;}
 recorrer += 1;
-if(recorrer == 14){break;}
+if(recorrer == 24){break;}
 temp = dfa->adjLists[recorrer];}
 myfile << endl;
   texto >> token;
@@ -253,5 +253,5 @@ actual += 1;
 if(caracteres > 0){ini += 1;}else{if(epsilon > 0){dest += 1;}}
 caracteres = 0;
 epsilon = 0;
-if(actual == 14){break;}
+if(actual == 24){break;}
 temp = nfa->adjLists[actual];}}
