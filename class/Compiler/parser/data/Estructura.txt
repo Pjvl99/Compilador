@@ -1,0 +1,46 @@
+<program> -> <class> program '{' <method_decl>* <field_decl>* '}'
+
+<field_decl> -> <type> {<id> | <id> '[' <int_literal> ']' }+, ;
+
+<method_decl> -> {<type> | <void>} <id> ( [{<type> <id>}+,] ) <block>
+
+<block> -> '{' <statement>* <var_decl>* '}'
+
+<var_decl> -> <type> <id>+, ;
+
+<statement> -> <block>
+| <location> <assign_op> <expr> ;
+| <method_call> ;
+| <if> ( <expr> ) <block> [<else> <block>]
+| <for> <id> <assign_op> <expr> , <expr> <block>
+| <return> [<expr>] ;
+| <break> ;
+| <continue> ;
+
+<method_call> -> <id> ( [<expr>+,] )
+| <callout> ( <string_literal> [, <callout_arg>+,] )
+
+<method_name> -> <id>
+
+<location> -> <id>
+| <location'>
+
+<location'> -> <id> '[' <expr> ']'
+
+<expr> -> <location>
+| <method_call>
+| <literal>
+| <expr> <bin_op> <expr>
+| <arith_op> <expr>
+| ! <expr>
+| ( <expr> )
+
+<bin_op> -> <arith_op> | <rel_op> | <eq_op> | <cond_op>
+
+<literal> -> <bool_literal>
+| <char_literal>
+| <int_literal>
+
+<int_literal> -> <num> | <hex_digit>
+
+<callout_arg> -> <expr> | <string_literal>

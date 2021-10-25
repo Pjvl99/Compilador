@@ -2,6 +2,7 @@
 #include <string.h>
 #include "scanner/Scanner.hpp"
 #include "scanner/Lexer.hpp"
+#include "parser/Parser.hpp"
 bool debuguear = false;
 int main( int argc, char *argv[] ){
     std::string str("");
@@ -44,7 +45,17 @@ int main( int argc, char *argv[] ){
         if(msj){printf("\n\nDebugging: Scanner\n");}else{printf("\n\nStage: Scanning\n");}
         scanner();
         if(msj){printf("\n\nDebugging: Lexer\n");}else{printf("\n\nStage: Lexer\n");}
-        lexer(debuguear);}
+        lexer(debuguear);
+        if(msj)
+        {
+            printf("\n\n Debugging: Parser\n");
+        }
+        else
+        {
+            printf("\n\n Stage: Parsing");
+        }
+        parser();
+        }
     else if(cantidad){
         while(x != comp){
             if(strcmp(words[comp], "Scanner") == 0){
@@ -57,6 +68,13 @@ int main( int argc, char *argv[] ){
                 lexer(debuguear);
                 comp += 1;
                 quitar = false;}
+            else if(strcmp(words[comp], "Parser") == 0)
+            {
+                printf("\nDebugging: Parser\n");
+                parser();
+                comp += 1;
+                quitar = false;
+            }   
             if(!quitar){quitar=true;}else{comp += 1;}}}
     else{
     if(strcmp(argv[2], "Scanner") == 0){
@@ -64,4 +82,18 @@ int main( int argc, char *argv[] ){
         scanner();}
     if(strcmp(argv[2], "Lexer") == 0){
         if(msj){printf("\nDebugging: Lexer\n");}else{printf("\nStage: Lexer\n");}
-        lexer(debuguear);}}}
+        lexer(debuguear);}
+    if(strcmp(argv[2], "Parser") == 0)
+    {
+        if(msj)
+        {
+            printf("\n Debugging: Parser\n");
+        }
+        else
+        {
+            printf("\n Stage: Parsing \n");
+        }
+        parser();
+    }
+    }
+    }

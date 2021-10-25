@@ -48,7 +48,7 @@ void scanner(){
 char regex[100];
 char token[100];
 struct Graph* mega = createAGraph(25);
-ifstream texto ("regex.txt");
+ifstream texto ("scanner/data/regex.txt");
 addEdge(graph, 0, 1, "1");
 addEdge(graph, 0, 1, "[");
 addEdge(graph, 0, 1, "("); 
@@ -80,7 +80,7 @@ addEdge(graph, 6, 5, "|");
 addEdge(graph, 7, 1, "|");
 addEdge(graph, 7, 0, "·");
 addEdge(graph, 7, 6, ")");
-ofstream myfile ("grafos.txt");
+ofstream myfile ("scanner/data/grafos.txt");
 string pasar;
 getline(texto, pasar);
 strcpy(token, pasar.c_str());

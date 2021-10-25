@@ -24,16 +24,18 @@ else{
     ptr->next = new_node;
     new_node->next = NULL;}
 return tok;}
+
+int totalnodes = 1;
 struct node2 {
   int vertex;
   char weight[2];
   char name[20];
   struct node2* next;};
-struct node2* createNodes(int);
+struct node2* createNodesl(int);
 struct Graph2 {
   int numVertices;
   struct node2** adjLists;};
-struct node2* createNodes(int v) {
+struct node2* createNodesl(int v) {
   struct node2* newNode;
   newNode = (struct node2*)malloc(sizeof(struct node2));
   newNode->vertex = v;
@@ -51,7 +53,7 @@ struct Graph2* createAGraphs(int vertices) {
 void addEdge(struct Graph2* graph, int b, int d, const char* w, const char* t) {
     std::string str("");
     str += w;
-  struct node2* newNode = createNodes(d);
+  struct node2* newNode = createNodesl(d);
   newNode->next = graph->adjLists[b];
   strcat(newNode->weight, str.c_str());
   str = ""; str += t;
@@ -62,7 +64,7 @@ bool punteros(struct Graph2* supergrafo, char code[100], int rec, int continuar,
 struct nodelink *tok = NULL;
 void lexer(bool debuguear){
 char code[100];
-ifstream grafos("grafos.txt");
+ifstream grafos("scanner/data/grafos.txt");
 struct Graph2* supergrafo = createAGraphs(25);
 char token[20];
 int rec = 0;
