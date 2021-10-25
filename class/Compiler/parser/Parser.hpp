@@ -746,20 +746,13 @@ bool action(map<string, int> locations, int pos, bool fail, int n, int ini, map<
             before = false;
         }
     }
-    if(m == totalnodes) //Si ya llego al final de la linkedlist simplemente denota que el programa funciono perfectamente e hizo match al 100%
+    m = current;
+    fail = true;
+    for(int b=0;b<words;b++)
     {
-        fail = false;
+        tokens = pop(tokens);
+        tokens = pop(tokens);
     }
-    else //Si no es porque en este noterminal no hizo match con todas las producciones y se procede a borrar del stack de tokens y se retorna fail como true
-    {
-        m = current;
-        fail = true;
-        for(int b=0;b<words;b++)
-        {
-            tokens = pop(tokens);
-            tokens = pop(tokens);
-        }
-    } 
     return fail;
 }
 
