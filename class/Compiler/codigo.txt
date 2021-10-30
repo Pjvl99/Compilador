@@ -1,8 +1,19 @@
 class program {
+int x , y [ 5 ] ;
+bool hola , hola2 ;
+bool hola3 , hola4 ;
+int x2 ( int amarillo , int rojo ) 
+{
+    int pollo ;
+    pollo = x2 ( amarillo , 5 + 3 ) ;
+    pollo = y [ 5 ] ;
+    return pollo ;
+}
 
-int x ( ) 
-{ 
-    y = 5 + ( 9 + 7 ) ; 
+void test ( )
+{
+int alo ;
+alo = x2 ( 4 , 5.4 ) ;
 }
 
 }

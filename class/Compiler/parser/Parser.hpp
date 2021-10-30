@@ -14,12 +14,15 @@ struct tree //Estructura del arbol
     struct tree *next; // Siguiente
     struct tree *child; // Hijos
     int pos; // La posicion dentro de la tabla de simbolos donde encontramos el valor de ese token
+    char vtype[30];
 };
 
 struct stack // Estructura del stack
 {
+    int scope;
     char data[30]; // Valor del stack
     struct stack *next;
+    int pos;
 };
 
 struct node3 // Nodo del grafo
@@ -34,11 +37,11 @@ struct node3 // Nodo del grafo
 tree * new_nodetree(string data, int pos) // Esta funcion simplemente reserva espacio en memoria para cada nodo nuevo creado del arbol y asigna su respectivo valor
 {
     tree *new_node = (struct tree*)malloc(sizeof(struct tree));
-
     if ( new_node ) {
         new_node->next = NULL;
         new_node->child = NULL;
         new_node->pos = pos;
+        strcpy(new_node->vtype, "");
         strcpy(new_node->data, data.c_str());
     }
 
@@ -110,11 +113,13 @@ void addEdge(struct Graph3* graph, int b, int d, const char* w, const char* t, i
 bool other = false;
 int option = 0;
 struct stack *tokens = NULL;
-struct stack *push(struct stack *top, string str) //Funcion del stack para hacer push
+struct stack *push(struct stack *top, string str, int val, int val2) //Funcion del stack para hacer push
 {
     struct stack *ptr;
     ptr = (struct stack*)malloc(sizeof(struct stack));
     strcpy(ptr->data, str.c_str());
+    ptr->scope = val;
+    ptr->pos = val2;
     if(top == NULL)
     {
         ptr -> next = NULL;
@@ -524,6 +529,10 @@ string wordkey(map<int, string> key, int pos) //Es una hash table para los token
     {
         str = itr->second;
     }
+    else
+    {
+        str = "0a";
+    }
     return str;
 }
 
@@ -583,7 +592,11 @@ void read(struct nodelink *store, struct tree * root, map<string, int> locations
         }
     }
 }
-
+int doitp[10] = {0};
+int mv = 0;
+int mayor = 0;
+int mv22[10] = {0};
+int mv2p = -1;
 bool action(map<string, int> locations, int pos, bool fail, int n, int ini, map<int, string> keywords)
 { //Aqui es donde empieza la recursion, se comparan todos los tokens con todos los noterminales y sus items respectivos
     string value;
@@ -595,7 +608,9 @@ bool action(map<string, int> locations, int pos, bool fail, int n, int ini, map<
     bool before = false;
     bool hold = false;
     const char* oki;
+    int mvcurrent = mv2p;
     int words = 0;
+    int posmv = 0;
     int current = m;
     bool cont = false;
     string name;
@@ -630,6 +645,9 @@ bool action(map<string, int> locations, int pos, bool fail, int n, int ini, map<
                     }
                     else
                     {
+                        mv2p += 1;
+                        mv22[mv2p] = 0;
+                        posmv = mv2p;
                         doit = true;
                         cont = true;
                         tempv = temp->next;
@@ -664,12 +682,12 @@ bool action(map<string, int> locations, int pos, bool fail, int n, int ini, map<
                 }
             }
         }
-        if(move)
+        if(move) // Esto es shift
         {
             if(!hold) //Hay veces donde no se mete al stack ya que dentro de la recursion a veces ya guardo los tokens no tiene sentido guardarlos 2 veces
             {
-                tokens = push(tokens, value);
-                tokens = push(tokens, to_string(m));
+                tokens = push(tokens, value, 0, 0);
+                tokens = push(tokens, to_string(m), 0, 0);
                 m += 1;
                 words += 1;
             }
@@ -705,19 +723,20 @@ bool action(map<string, int> locations, int pos, bool fail, int n, int ini, map<
                 {
                     st = peek(tokens);
                     y = stoi(st);
-                    store = push(store, st); //Se guarda el historial en otro stack para crear el arbol luego
+                    store = push(store, st, 0, 0); //Se guarda el historial en otro stack para crear el arbol luego
                     tokens = pop(tokens); //Se borra los tokens en el stack de tokens
                     st = peek(tokens);
                     tokens = pop(tokens);
-                    store = push(store, st);
+                    store = push(store, st, 0, 0);
                 }
                 cout << "INSERTING: " << name << endl;
-                tokens = push(tokens, name);
-                tokens = push(tokens, to_string(y)); //Se inserta el nuevo noterminal por el que hizo match
-                store = push(store, name);
+                tokens = push(tokens, name, 0, 0);
+                tokens = push(tokens, to_string(y), 0, 0); //Se inserta el nuevo noterminal por el que hizo match
+                store = push(store, name, 0, 0);
                 st = to_string(y);
-                store = push(store, st);
-                store = push(store, "reduce");
+                store = push(store, st, 0, 0);
+                store = push(store, "reduce", 0, 0);
+                mv22[mv2p] += 1;
                 fail = false;
                 return fail;
             }
@@ -730,21 +749,38 @@ bool action(map<string, int> locations, int pos, bool fail, int n, int ini, map<
                 if(compare > 0 && cont)
                 {
                     temp = tempv;
+                    string str;
+                    int h = 0;
                     cont = false;
-                    m -= 1;
+                    m = stoi(peek(tokens));
+                    value = wordkey(keywords, m);
                     tokens = pop(tokens); //Se borran sus datos del stack de tokens
                     tokens = pop(tokens);
-                    store = pop(store); //Se borra la data del stack de historial
-                    store = pop(store);
-                    store = pop(store);
-                    store = pop(store);
-                    store = pop(store);
+                    mv2p -= 1;
+                    while(true)
+                    {
+                        str = peek(store);
+                        if(strcmp(str.c_str(), "reduce") == 0)
+                        {
+                            h += 1;
+                            if(h == mv22[posmv]+1)
+                            {
+                                break;
+                            }
+                            store = pop(store);
+                        }
+                        store = pop(store);
+                        store = pop(store);
+                    }
                     words -= 1;
-                    value = wordkey(keywords, m);
                 }
             }
             before = false;
         }
+    }
+    if(m > mayor)
+    {
+        mayor = m;
     }
     m = current;
     fail = true;
@@ -817,7 +853,7 @@ string printtree(struct tree * root, int level, string str, char style[6][20]) /
     return str;
 }
 
-void parser() //Funcion del parser
+bool parser(bool fail) //Funcion del parser
 {
     for(int t=0;t<18;t++) //Se crea la coleccion de grafos
     {
@@ -835,7 +871,7 @@ void parser() //Funcion del parser
     string current;
     bool starting = false;
     char *ptr;
-    bool fail = true;
+    fail = true;
     while(!structure.eof()) //Estara en este while hasta que haya leido toda la gramatica de decaf
     {
         other = false;
@@ -879,27 +915,36 @@ void parser() //Funcion del parser
     }
     structure.close(); //Se cierra el .txt una vez terminamos
     string s;
+    string s2;
     struct nodelink* p = tok;
     s = p->t;
     map<int, string> keywords;
+    map<int, string> lineasc;
     keywords[0] = s;
+    lineasc[0] = "0";
+    posicioneslineas = posicioneslineas->next;
     p = p->next;
     char style[6][20] = {"middle-level", "product-dept", "pipeline1", "rd-dept", "frontend1"};
     while(p) //Se guardan los valores de la linkedlist en una hash table
     {
+        s2 = posicioneslineas->data;
         s = p->t;
         if(strcmp(p->t, "Comment") != 0)
         {
+            lineasc[totalnodes] = s2;
             keywords[totalnodes] = s;
             totalnodes += 1;
         }
-        p = p->next;
+        posicioneslineas = posicioneslineas->next;
+        p = p->next; 
     }
     fail = action(locations, 0, fail, 0, 0, keywords); //Para entrar a la parte donde una vez tenemos el grafo de estados se empieza a hacer recursion y a revisar
     int x = 0;
     cout << endl;
     string str;
     string str2;
+    string show;
+    ofstream html("parser/src/index.html");
     if(!fail) //Si al final hizo match al 100% con la gramatica entra aca donde simplemente se crea el arbol y el html
     {
         struct nodelink* tok2 = NULL;
@@ -909,14 +954,15 @@ void parser() //Funcion del parser
             tok2 = Insertar(tok2, store->data, "");
             store = store->next;
         }
+        tok2 = tok2->next;
+        tok2 = tok2->next;
+        tok2 = tok2->next;
+        cout << endl;
+        cout << endl;
         root = new_nodetree("<program>", 0);
-        tok2 = tok2->next;
-        tok2 = tok2->next;
-        tok2 = tok2->next;
-        cout << endl;
-        cout << endl;
+        cout << "SALI DE ACTION" << endl;
         read(tok2, root, locations, false, 0, "");
-        string show = "'use strict';\n";
+        show = "'use strict';\n";
         show += "(function($){\n";
         show += "$(function() {\n";
         show += "var datascource = ";
@@ -931,9 +977,18 @@ void parser() //Funcion del parser
         ofstream script("parser/src/script.js");
         script << show;
         script.close();
+        show = succesful(show);
+        html << show;
+        fail = false;
     }
-    else //Si en dado caso hay algun error en la gramatica tira error en la terminal
+    else
     {
-        printf("\nERROR SINTACTICO, REVISA TU CODIGO EN SUS RESPECTIVAS LINEAS PARA PODER CORREGIR TUS ERRORES :)");
+        show = error(show);
+        html << show;
+        cout << endl << "ERROR SINTACTICO EN LINEA: " << m+2;
     }
+    m = stoi(wordkey(lineasc, mayor));
+    cout << "\nParser ejecutado correctamente, revisa el html para ver tus resultados! :)";
+    html.close();
+    return fail;
 }

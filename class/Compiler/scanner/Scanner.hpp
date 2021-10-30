@@ -43,6 +43,21 @@ void transform(struct Graph* nfa, struct Graph* dfa, struct Graph* mega);
 int dividir(int rec, int ini, int dest, int save, string str, struct Graph* nfa, char regex[100]);
 bool ramificar = false;
 bool doble = false;
+string error(string htmlerror)
+{
+  htmlerror = "<!DOCTYPE html>\n";
+  htmlerror += "<html>\n";
+  htmlerror += "<head>\n";
+  htmlerror += "<title>ERROR</title>\n";
+  htmlerror += "</head>\n";
+  htmlerror += "<body>\n";
+  htmlerror += "<center><font face='Arial'><h1> ¡Oh no! Tu error sintáctico hizo que al compilador le diera amsiedad </p1></font></center>\n";
+  htmlerror += "<center>  <img src = 'img/5f652714fb2c74e5daac85c3812864ee.jpg'\n";
+  htmlerror += "alt = 'Cheems' height = '400' width = '400' /> </center>\n";
+  htmlerror += "</body>\n";
+  htmlerror += "</html>\n";
+  return htmlerror;
+}
 struct Graph* graph = createAGraph(24);
 void scanner(){
 char regex[100];

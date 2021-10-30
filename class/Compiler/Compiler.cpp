@@ -3,6 +3,7 @@
 #include "scanner/Scanner.hpp"
 #include "scanner/Lexer.hpp"
 #include "parser/Parser.hpp"
+#include "semantic/Semantic.hpp"
 bool debuguear = false;
 int main( int argc, char *argv[] ){
     std::string str("");
@@ -13,6 +14,7 @@ int main( int argc, char *argv[] ){
     bool cantidad = false;
     bool quitar = false;
     int rec = 0;
+    bool error = false;
     int x = 0;
     char words[15][30];
     if(argv[1] == NULL){
@@ -54,7 +56,16 @@ int main( int argc, char *argv[] ){
         {
             printf("\n\n Stage: Parsing");
         }
-        parser();
+        error = parser(error);
+        if(msj)
+        {
+            printf("\n\n Debugging: Semantic\n\n");
+        }
+        else
+        {
+            printf("\n\n Stage: Semantic");
+        }
+        semantic(error);
         }
     else if(cantidad){
         while(x != comp){
@@ -71,7 +82,14 @@ int main( int argc, char *argv[] ){
             else if(strcmp(words[comp], "Parser") == 0)
             {
                 printf("\nDebugging: Parser\n");
-                parser();
+                error = parser(error);
+                comp += 1;
+                quitar = false;
+            }
+            else if(strcmp(words[comp], "Semantic") == 0)
+            {
+                printf("\n\nDebugging: Semantic\n\n");
+                semantic(error);
                 comp += 1;
                 quitar = false;
             }   
@@ -93,7 +111,19 @@ int main( int argc, char *argv[] ){
         {
             printf("\n Stage: Parsing \n");
         }
-        parser();
+        error = parser(error);
+    }
+    if(strcmp(argv[2], "Semantic") == 0)
+    {
+        if(msj)
+        {
+            printf("\n Debugging: Semantic\n");
+        }
+        else
+        {
+            printf("\n Stage: Semantic \n");
+        }
+        semantic(error);
     }
     }
     }

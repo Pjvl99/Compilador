@@ -20,12 +20,10 @@
 <method_call> -> <id> ( [<expr>+,] )
 | <callout> ( <string_literal> [, <callout_arg>+,] )
 
-<method_name> -> <id>
-
 <location> -> <id>
-| <location'>
+| <location2>
 
-<location'> -> <id> '[' <expr> ']'
+<location2> -> <id> '[' <expr> ']'
 
 <expr> -> <location>
 | <method_call>

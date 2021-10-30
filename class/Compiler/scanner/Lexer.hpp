@@ -24,7 +24,31 @@ else{
     ptr->next = new_node;
     new_node->next = NULL;}
 return tok;}
+string succesful(string texthtml)
+{
+  texthtml = "<!DOCTYPE html>\n";
+  texthtml += "<html lang='en' >\n";
+  texthtml += "<head>\n";
+  texthtml +=  "<meta charset='UTF-8'>\n";
+  texthtml += "<title>Parser</title>\n";
+  texthtml +=  "<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'>\n";
+  texthtml +=  "<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/orgchart/2.1.3/css/jquery.orgchart.min.css'><link rel='stylesheet' href='./style.css'>\n\n";
 
+  texthtml +=  "</head>\n";
+  texthtml +=  "<body>\n";
+  texthtml +=  "<!-- partial:index.partial.html -->\n";
+  texthtml +=  "<div id='chart-container'></div>\n";
+
+  texthtml +=  "<a id='github-link' href='https://github.com/pjvl99/compilador' target='_blank'><i class='fa fa-github-square'></i></a>\n";
+  texthtml +=  "<!-- partial -->\n";
+  texthtml +=  "<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>\n";
+  texthtml +=  "<script src='https://cdnjs.cloudflare.com/ajax/libs/orgchart/2.1.3/js/jquery.orgchart.min.js'></script><script  src='./script.js'></script>\n\n";
+
+  texthtml +=  "</body>\n";
+  texthtml +=  "</html>\n";
+  return texthtml;
+}
+struct nodelink *posicioneslineas = NULL;
 int totalnodes = 1;
 struct node2 {
   int vertex;
@@ -94,6 +118,7 @@ string revisar;
 string agregart("");
 int palabra = 0;
 int linea = 1;
+int evitando = 0;
 bool jump = false;
 char tokens[3][20] = {0};
 while(!codigo.eof()){
@@ -114,6 +139,7 @@ while(!codigo.eof()){
            agregart = tokens[bueno-1];
            if(debuguear){cout << "Analizando palabra: " << agregar << endl;}
            tok = Insertar(tok, agregar, agregart);
+           posicioneslineas = Insertar(posicioneslineas, to_string(linea), to_string(palabra));
          bueno = 0; if(code[rec] != '\0'){rec += 1;}
         strcpy(tokens[0], ""); strcpy(tokens[1], "");
         if(strcmp(agregar.c_str(), "//") == 0){agregar="";agregart="";break;}
@@ -130,18 +156,19 @@ while(!codigo.eof()){
            agregart = tokens[bueno-1];
            if(debuguear){cout << "Analizando palabra: " << agregar << endl;}
            tok = Insertar(tok, agregar, agregart);
+           posicioneslineas = Insertar(posicioneslineas, to_string(linea), to_string(palabra));
            strcpy(tokens[0], ""); strcpy(tokens[1], "");
            bueno = 0;
            if(strcmp(agregar.c_str(), "//") == 0){agregar="";agregart="";break;}
            agregar = ""; agregart = "";
           if(code[rec] != '\0'){rec += 1;}palabra += 1;}
           else{
-            printf("\n");
+            evitando = 0;
             while(code[rec] != '\0' && (code[rec] != ' ' || jump)){
               revisar = code[rec]; if(strcmp(revisar.c_str(), "'")==0){jump = !jump;}
-              agregar += code[rec];rec += 1;} bueno = 0; if(code[rec] != '\0'){rec += 1;}
-            palabra += 1; if(debuguear){cout << "Analizando palabra: " << agregar << endl;}
-            cout << "Error en palabra: " << agregar << " -> Linea " << linea << " Palabra #: " << palabra << endl;agregar = "";}}}
+              agregar += code[rec];rec += 1;evitando += 1;} bueno = 0; if(code[rec] != '\0'){rec += 1;}
+            palabra += 1; if(debuguear && evitando){printf("\n");cout << "Analizando palabra: " << agregar << endl;}
+            if(evitando!=0){cout << "Error en palabra: " << agregar << " -> Linea " << linea << " Palabra #: " << palabra << endl;}agregar = "";}}}
 palabra = 0;
 continuar = 0;
 rec = 0;
