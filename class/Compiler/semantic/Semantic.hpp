@@ -548,6 +548,10 @@ bool typecheck(struct tree * root, bool check, bool error, bool expr)
 			{
 				retorno = false;
 				error = typecheck(root->child, true, error, false);
+				if(error)
+				{
+					retorno = false;
+				}
 				if(retorno)
 				{
 					cout << endl << "ERROR NO HAY NINGUN 'RETURN'" << endl;

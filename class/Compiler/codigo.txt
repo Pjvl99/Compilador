@@ -5,15 +5,16 @@ bool hola3 , hola4 ;
 int x2 ( int amarillo , int rojo ) 
 {
     int pollo ;
-    pollo = x2 ( amarillo , 5 + 3 ) ;
+    pollo = x2 ( amarillo , 5 ) ;
     pollo = y [ 5 ] ;
-    return pollo ;
+    return amarillo ;
 }
 
 void test ( )
 {
 int alo ;
-alo = x2 ( 4 , 5.4 ) ;
+alo = x2 ( 4 , 4 ) ;
+return ;
 }
 
 }
