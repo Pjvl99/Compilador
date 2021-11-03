@@ -437,6 +437,12 @@ bool typecheck(struct tree * root, bool check, bool error, bool expr)
 				error = true;
 				return error;
 			}
+			else if(strcmp(str1.c_str(), str2.c_str()) != 0)
+			{
+				cout << endl << "ERROR LAS VARIABLES NO SON DEL MISMO TIPO" << endl;
+				error = true;
+				return error;
+			}
 		}
 		if(strcmp(root->data, "<location>") == 0 && !expr)
 		{
@@ -462,6 +468,12 @@ bool typecheck(struct tree * root, bool check, bool error, bool expr)
 				if(strcmp(str1.c_str(), "void") == 0 || strcmp(str2.c_str(), "void") == 0)
 				{
 					cout << endl << "ERROR EL VALOR ES TIPO 'VOID'" << endl;
+					error = true;
+					return error;
+				}
+				else if(strcmp(str1.c_str(), str2.c_str()) != 0)
+				{
+					cout << endl << "ERROR LAS VARIABLES NO SON DEL MISMO TIPO" << endl;
 					error = true;
 					return error;
 				}
@@ -528,9 +540,9 @@ bool typecheck(struct tree * root, bool check, bool error, bool expr)
 			else if(value)
 			{
 				str1 = root->next->vtype;
-				if(strcmp(str1.c_str(), "void") == 0)
+				if(strcmp(str1.c_str(), valoretorno.c_str()) != 0)
 				{
-					cout << endl << "ERROR EL VALOR TIPO 'VOID' NO ES VALIDO" << endl;
+					cout << endl << "ERROR SE ESPERABA UN VALOR DE RETORNO DE TIPO: " << valoretorno << endl;
 					error = true;
 					return error;
 				}
