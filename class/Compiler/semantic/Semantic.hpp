@@ -5,11 +5,15 @@ struct vardata
 	char value[30];
 	char typev[30];
 	bool matrix;
+	int matrixq;
 	int varq;
 	char vtypev[10][100];
+	int posstack;
 };
 struct vardata vararray[200];
 int varquantity = 0;
+int vqa = -1;
+int varquan[100];
 int searchstack(struct stack *top, string val, int pos, int scope, bool noinsert, int *y)
 {
 	int scope2;
@@ -43,8 +47,10 @@ int searchstack(struct stack *top, string val, int pos, int scope, bool noinsert
 	return -2;
 }
 int vardecl[100] = {0};
+int scopesstack[100] = {0};
 int p = 0 ;
 string tp;
+int funcs = 0;
 multimap<string, string> posib;
 char posibtypes[11][10] = {"bool", "float", "int", "int", "float", "float", "float", "int", "int", "int", "int"};
 string posibilities(string tp, char val[3][15])
@@ -69,8 +75,8 @@ string posibilities(string tp, char val[3][15])
 	tp = "notype";
 	return tp;
 }
-
-bool Uniqueness(int scope, struct tree * root, bool method, map<int, string> variables, bool error, bool wait2)
+bool mainf = false;
+bool Uniqueness(int scope, struct tree * root, bool method, map<int, string> variables, bool error, bool wait2, int p2)
 {
 	char val[3][15];
 	char numeros[30];
@@ -88,6 +94,7 @@ bool Uniqueness(int scope, struct tree * root, bool method, map<int, string> var
 	int postoinsert;
 	int insmethod = 0;
 	bool ismatrix = false;
+	int mq = 0;
 	int m;
 	while(root)
 	{
@@ -95,7 +102,12 @@ bool Uniqueness(int scope, struct tree * root, bool method, map<int, string> var
 		{
 			if(!method)
 			{
+				p2 = 0;
 				scope += 1;
+				if(scopesstack[scope] == 0)
+				{
+					scopesstack[scope] = 0;
+				}
 			}
 		}
 		if(root->data[0] == '}')
@@ -104,10 +116,13 @@ bool Uniqueness(int scope, struct tree * root, bool method, map<int, string> var
 			{
 				tablevar = pop(tablevar);
 			}
+			scopesstack[scope] = 0;
 			vardecl[scope] = 0;
 		}
 		if(root->data[0] == '(' && method)
 		{
+			vqa += 1;
+			funcs += 1;
 			scope += 1;
 			insertmethod = true;
 		}
@@ -125,6 +140,7 @@ bool Uniqueness(int scope, struct tree * root, bool method, map<int, string> var
 				}
 			}
 			root->pos = varquantity;
+			vararray[varquantity].matrixq = mq;
 			vararray[varquantity].ismethod = false;
 			tablevar = push(tablevar, str, scope, varquantity);
 			strcpy(vararray[varquantity].typev, root->vtype);
@@ -139,6 +155,22 @@ bool Uniqueness(int scope, struct tree * root, bool method, map<int, string> var
 			str = wordkey(variables, root->pos);
 			if(hold)
 			{
+				if(strcmp(str.c_str(), "main") == 0 && method)
+				{
+					if(mainf)
+					{
+						error = true;
+						cout << "FUNCION MAIN YA DECLARADA" << endl;
+						return error;
+					}
+					else if(root->next->next->data[0] != ')')
+					{
+						error = true;
+						cout << "LA FUNCION MAIN NO LLEVA ARGUMENTOS" << endl;
+						return error;
+					}
+					mainf = true;
+				}
 				pos = searchstack(tablevar, str, pos, scope, false, &m);
 				if(pos == -2)
 				{
@@ -156,13 +188,29 @@ bool Uniqueness(int scope, struct tree * root, bool method, map<int, string> var
 								return error;
 							}
 						}
+						mq = stoi(str2);
 					}
 					root->pos = varquantity;
+					vararray[varquantity].matrixq = mq;
 					strcpy(root->vtype, strtype.c_str());
 					vararray[varquantity].ismethod = wait;
 					strcpy(vararray[varquantity].typev, strtype.c_str());
 					strcpy(vararray[varquantity].value, str.c_str());
 					vararray[varquantity].matrix = ismatrix;
+					if(scope > 0)
+					{
+						vararray[varquantity].posstack = scopesstack[scope];
+					}
+					else
+					{
+						vararray[varquantity].posstack = -1;
+					}
+					scopesstack[scope] += 4;
+					if(scope > 0)
+					{
+						varquan[vqa] += 1;
+					}
+					mq = 0;
 					if(!insertmethod && method)
 					{
 						postoinsert = varquantity;
@@ -212,7 +260,7 @@ bool Uniqueness(int scope, struct tree * root, bool method, map<int, string> var
 		{
 			if(strcmp(root->data, "<method_decl>") == 0)
 			{
-				error = Uniqueness(scope, root->child, true, variables, error, false);
+				error = Uniqueness(scope, root->child, true, variables, error, false, p2);
 			}
 			else
 			{
@@ -220,7 +268,7 @@ bool Uniqueness(int scope, struct tree * root, bool method, map<int, string> var
 				{
 					if(root->child->next)
 					{
-						error = Uniqueness(scope, root->child, false, variables, error, true);
+						error = Uniqueness(scope, root->child, false, variables, error, true, p2);
 						if(strcmp(tp.c_str(), "notype") == 0)
 						{
 							cout << endl << "NO PUEDES TRABAJAR CON VALORES DE TIPO 'VOID'" << endl;
@@ -248,7 +296,7 @@ bool Uniqueness(int scope, struct tree * root, bool method, map<int, string> var
 						}
 						else
 						{
-							error = Uniqueness(scope, root->child, false, variables, error, false);
+							error = Uniqueness(scope, root->child, false, variables, error, false, p2);
 							str = wordkey(variables, root->pos);
 							pos = searchstack(tablevar, str, pos, scope, true, &m);
 							if(pos != -2)
@@ -269,11 +317,11 @@ bool Uniqueness(int scope, struct tree * root, bool method, map<int, string> var
 				{
 					if(method)
 					{
-						error = Uniqueness(scope-1, root->child, false, variables, error, false);
+						error = Uniqueness(scope-1, root->child, false, variables, error, false, p2);
 					}
 					else
 					{
-						error = Uniqueness(scope, root->child, false, variables, error, false);
+						error = Uniqueness(scope, root->child, false, variables, error, false, p2);
 					}
 					if(strcmp(root->data, "<location>") == 0 || strcmp(root->data, "<location2>") == 0 || strcmp(root->data, "<method_call>") == 0)
 					{
@@ -365,7 +413,7 @@ string mostrararbol(struct tree * root, int level, string str, char style[6][20]
             cout << "\t";
         }
         str2 = root->data;
-        if(root->data[0] == '<')
+        if(root->data[0] == '<' && strlen(root->data) > 2)
         {
             str2.erase(str2.begin()+strlen(root->data)-1);
             str2.erase(str2.begin());
@@ -387,6 +435,7 @@ string mostrararbol(struct tree * root, int level, string str, char style[6][20]
                 cout << "\t";
             }
             cout << "Children:" << endl;
+			cout << root->data << endl;
             str = mostrararbol(root->child, level+1, str, style);
             str += "\n]";
             str += "\n}";
@@ -594,7 +643,7 @@ bool typecheck(struct tree * root, bool check, bool error, bool expr)
 	return error;
 }
 
-void semantic(bool error)
+bool semantic(bool error)
 {
 	int x = 0 ;
 	map<int, string> variables;
@@ -620,7 +669,12 @@ void semantic(bool error)
 	posib.insert(pair<string, string>("float", "char"));
 	if(!error)
 	{
-		error = Uniqueness(scope, root, false, variables, error, false);
+		error = Uniqueness(scope, root, false, variables, error, false , 0);
+		if(!mainf)
+		{
+			error = true;
+			cout << "ERROR FUNCION MAIN NUNCA FUE DECLARADA" << endl;
+		}
 		if(!error)
 		{
 			error = typecheck(root, false, error, false);
@@ -632,6 +686,7 @@ void semantic(bool error)
 				show += "$(function() {\n";
 				show += "var datascource = ";
 				show = mostrararbol(root, 0, show, style);
+				cout << endl << "SALI DEL ARBOL" << endl;
 				show += ";\n";
 				show += "var oc = $('#chart-container').orgchart({\n";
 				show += "'data' : datascource,\n";
@@ -646,4 +701,5 @@ void semantic(bool error)
 		}
 	}
 	cout << endl;
+	return error;
 }

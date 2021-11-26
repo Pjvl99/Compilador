@@ -4,6 +4,7 @@
 #include "scanner/Lexer.hpp"
 #include "parser/Parser.hpp"
 #include "semantic/Semantic.hpp"
+#include "irt/Irt.hpp"
 bool debuguear = false;
 int main( int argc, char *argv[] ){
     std::string str("");
@@ -65,7 +66,16 @@ int main( int argc, char *argv[] ){
         {
             printf("\n\n Stage: Semantic");
         }
-        semantic(error);
+        error = semantic(error);
+        if(msj)
+        {
+            printf("\n\n Debugging: Codegen\n\n");
+        }
+        else
+        {
+            printf("\n\n Stage: Codegen");
+        }
+        Irt();
         }
     else if(cantidad){
         while(x != comp){
@@ -89,10 +99,17 @@ int main( int argc, char *argv[] ){
             else if(strcmp(words[comp], "Semantic") == 0)
             {
                 printf("\n\nDebugging: Semantic\n\n");
-                semantic(error);
+                error = semantic(error);
                 comp += 1;
                 quitar = false;
-            }   
+            }
+            else if(strcmp(words[comp], "Codegen") == 0)
+            {
+                printf("\n\nDebugging: Codegen\n\n");
+                Irt();
+                comp += 1;
+                quitar = false;
+            } 
             if(!quitar){quitar=true;}else{comp += 1;}}}
     else{
     if(strcmp(argv[2], "Scanner") == 0){
@@ -123,7 +140,19 @@ int main( int argc, char *argv[] ){
         {
             printf("\n Stage: Semantic \n");
         }
-        semantic(error);
+        error = semantic(error);
+    }
+    if(strcmp(argv[2], "Codegen") == 0)
+    {
+        if(msj)
+        {
+            printf("\n Debugging: Codegen\n");
+        }
+        else
+        {
+            printf("\n Stage: Codegen \n");
+        }
+        Irt();
     }
     }
     }

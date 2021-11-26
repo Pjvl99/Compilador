@@ -1,20 +1,10 @@
 class program {
-int x , y [ 5 ] ;
-bool hola , hola2 ;
-bool hola3 , hola4 ;
-int x2 ( int amarillo , int rojo ) 
+int u ;
+int main ( ) 
 {
-    x = 5 + 4 ;
-    x = x2 ( amarillo , 5 ) ;
-    x = y [ 2 ] ;
-    return 5 ;
-}
-
-void test ( )
-{
-    float a ;
-    a = 5.4 ;
-    return ;
+    int x , y ;
+    x = 4 + 3 ;
+    return 0 ;
 }
 
 }

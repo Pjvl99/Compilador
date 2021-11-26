@@ -132,7 +132,7 @@ struct stack *push(struct stack *top, string str, int val, int val2) //Funcion d
     }
     return top;
 }
-struct Graph3* words2[18];
+struct Graph3* words2[21];
 struct stack *pop(struct stack *top) //Funcion del stack para borrar al ultimo que entro
 {
     struct stack *ptr;
@@ -508,6 +508,13 @@ void ToDo(char decaf[50], string father, map<string, int> locations) //Funcion p
             str.erase(str.begin()+1);
             strcpy(decaf, str.c_str());
         }
+        else if(decaf[1] == 60 || decaf[1] == 62)
+        {
+            str = decaf;
+            str.erase(str.begin());
+            str.erase(str.begin()+1);
+            strcpy(decaf, str.c_str());          
+        }
         else
         {
             error = true;
@@ -814,7 +821,7 @@ string printtree(struct tree * root, int level, string str, char style[6][20]) /
             cout << "\t";
         }
         str2 = root->data;
-        if(root->data[0] == '<')
+        if(root->data[0] == '<' && strlen(root->data) >= 2)
         {
             str2.erase(str2.begin()+strlen(root->data)-1);
             str2.erase(str2.begin());
@@ -855,7 +862,7 @@ string printtree(struct tree * root, int level, string str, char style[6][20]) /
 
 bool parser(bool fail) //Funcion del parser
 {
-    for(int t=0;t<18;t++) //Se crea la coleccion de grafos
+    for(int t=0;t<21;t++) //Se crea la coleccion de grafos
     {
         words2[t] = createAGraphsp(19);
         if(t == 5)
@@ -939,7 +946,6 @@ bool parser(bool fail) //Funcion del parser
         p = p->next; 
     }
     fail = action(locations, 0, fail, 0, 0, keywords); //Para entrar a la parte donde una vez tenemos el grafo de estados se empieza a hacer recursion y a revisar
-    int x = 0;
     cout << endl;
     string str;
     string str2;
